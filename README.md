@@ -287,6 +287,12 @@ AI：自动执行 采集 → 构建 → 全部推理 → 规划 → 报告
 
 ---
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=GUIYUNSO/devops-analytics&type=Date)](https://star-history.com/#GUIYUNSO/devops-analytics&Date)
+
+---
+
 ## 许可证
 
 [MIT](./LICENSE) — 拿去随便用，记得改成自己仓库名。

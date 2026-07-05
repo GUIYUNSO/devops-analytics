@@ -1,0 +1,63 @@
+name: Bug 报告
+description: 报告一个 Bug 或异常行为
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 清晰地描述你遇到了什么问题
+      placeholder: 例如：输入「分析这个仓库的风险」后，报告没有输出行动建议
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 如何触发这个问题？
+      placeholder: |
+        1. 打开 Codex
+        2. 输入「...」
+        3. 观察到...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为
+      description: 你期望发生什么？
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际行为
+      description: 实际发生了什么？
+    validations:
+      required: true
+  - type: dropdown
+    id: intent
+    attributes:
+      label: 使用的意图
+      options:
+        - 调试 (debug)
+        - 调查 (investigate)
+        - 监控 (monitor)
+        - 预测 (predict)
+        - 报告 (report)
+        - 优化 (optimize)
+        - 不确定
+  - type: textarea
+    id: env
+    attributes:
+      label: 环境信息
+      description: 操作系统、Codex 版本、是否有 GITHUB_TOKEN
+      placeholder: |
+        OS: Windows 11
+        Codex version: 0.142.5
+        GITHUB_TOKEN: 有 / 无
+  - type: textarea
+    id: additional
+    attributes:
+      label: 补充信息
+      description: 任何其他有助于诊断的信息（截图、日志等）
