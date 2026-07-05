@@ -1,0 +1,20 @@
+{
+  "name": "guiyunso",
+  "interface": {
+    "displayName": "GUIYUNSO"
+  },
+  "plugins": [
+    {
+      "name": "devops-analytics",
+      "source": {
+        "source": "local",
+        "path": "./plugins/devops-analytics"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

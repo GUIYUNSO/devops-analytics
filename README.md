@@ -19,7 +19,11 @@
 **安装**
 
 ```bash
-codex plugin add devops-analytics@personal
+# 添加 Git marketplace
+codex plugin marketplace add GUIYUNSO/devops-analytics
+
+# 安装插件
+codex plugin add devops-analytics@guiyunso
 ```
 
 **直接提问**

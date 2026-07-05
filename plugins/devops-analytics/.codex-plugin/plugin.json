@@ -1,0 +1,35 @@
+{
+  "name": "devops-analytics",
+  "version": "4.0.0",
+  "description": "工程智能代理 — V3 规划 + V1 执行。意图路由、线性 pipeline、markdown 记忆、用户画像推断。",
+  "author": {
+    "name": "MiMoCode"
+  },
+  "keywords": [
+    "engineering-intelligence",
+    "devops",
+    "intent-routing",
+    "risk-prediction",
+    "root-cause-analysis",
+    "trend-analytics",
+    "action-planner"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "工程智能代理（EIA）",
+    "shortDescription": "V3 planning + V1 execution — 自适应 DevOps 分析",
+    "longDescription": "6-skill pipeline：意图路由 + 用户画像推断、git/GitHub 事件采集、时间线 + 知识图谱构建、统一推理（风险/RCA/趋势）、行动规划、多语言报告生成。markdown 记忆。严格 IO contract。",
+    "developerName": "MiMoCode",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "分析这个仓库的主要风险",
+      "为什么最近bug越来越多？",
+      "给这周的工程效率做个报告"
+    ],
+    "brandColor": "#6366F6"
+  }
+}
