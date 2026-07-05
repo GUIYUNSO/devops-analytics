@@ -1,110 +1,101 @@
+<div align="center">
+
 # 工程智能代理（EIA）
 
-**V3 规划 + V1 执行** —— Codex 自适应 DevOps 分析插件。
+**Codex 自适应 DevOps 分析插件**
 
-EIA 将原始开发事件转化为可执行的工程洞察。输入一个关于代码仓库的问题，它会自动采集数据、构建时间线和知识图谱、多维推理、规划行动，并以简洁的语言输出结果——全部在一个线性 pipeline 中完成。
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Plugin: Codex](https://img.shields.io/badge/Plugin-Codex-purple.svg)](https://github.com/GUIYUNSO/devops-analytics)
+[![Version: 4.0](https://img.shields.io/badge/Version-4.0-green.svg)](https://github.com/GUIYUNSO/devops-analytics)
+
+输入一个问题，自动完成：采集 → 构建 → 推理 → 规划 → 报告
+
+</div>
 
 ---
 
 ## 快速开始
 
-### 安装
+**安装**
 
 ```bash
 codex plugin add devops-analytics@personal
 ```
 
-安装后启动新会话，直接提问：
+**直接提问**
 
 > *「分析这个仓库的主要风险」*
 > *「为什么最近 bug 越来越多？」*
 > *「给这周的工程效率做个报告」*
 
-### 从 GitHub 安装
-
-将 marketplace 指向 `GUIYUNSO/devops-analytics`，然后执行：
-
-```bash
-codex plugin add devops-analytics@<marketplace-name>
-```
-
 ---
 
-## 架构
+## 工作流程
 
 ```
 用户提问
-  │
-  ▼
-┌─ eia（编排器）───────────────────────────────────┐
-│  推断用户角色、紧急度、语言                          │
-│  分类意图（6 种类型）                               │
-│  读取记忆 → 选择 pipeline                          │
-└──────────────────────────────────────────────────┘
-  │
-  ▼
-┌─ eia-collect（采集）─────────────────────────────┐
-│  git log / GitHub API                             │
-│  统一事件 Schema                                   │
-│  计算模块归属、代码 ownership、变更频率               │
-└──────────────────────────────────────────────────┘
-  │
-  ▼
-┌─ eia-build（构建）───────────────────────────────┐
-│  将事件链接为生命周期时间线                          │
-│  构建实体关系图谱                                   │
-│  计算聚合指标（lead time、瓶颈定位）                  │
-└──────────────────────────────────────────────────┘
-  │
-  ▼
-┌─ eia-reason（推理）──────────────────────────────┐
-│  风险评分：为 PR 和模块打分                          │
-│  根因分析：bug → deploy → PR → commit 反向追溯      │
-│  趋势分析：周期对比、异常检测                         │
-└──────────────────────────────────────────────────┘
-  │
-  ▼
-┌─ eia-planner（规划）─────────────────────────────┐
-│  将发现匹配为行动规则                                │
-│  按影响/成本比排序                                   │
-│  根据用户角色裁剪                                    │
-└──────────────────────────────────────────────────┘
-  │
-  ▼
-┌─ eia-report（报告）──────────────────────────────┐
-│  用用户语言组织输出                                   │
-│  对话模式或报告模式                                   │
-│  追加 pipeline trace + 写入记忆                      │
-└──────────────────────────────────────────────────┘
+    │
+    ▼
+┌─ eia ────────────────┐
+│  意图分类 + 角色推断    │
+└──────────┬───────────┘
+           │
+    ┌──────┴──────┐
+    │             │
+    ▼             ▼
+┌─────────┐ ┌─────────┐
+│ collect │→│  build  │
+│ 数据采集 │ │ 知识构建 │
+└─────────┘ └─────────┘
+           │
+    ┌──────┴──────┐
+    │             │
+    ▼             ▼
+┌─────────┐ ┌─────────┐
+│  risk   │ │   rca   │
+│ 风险评分 │ │ 根因分析 │
+└─────────┘ └─────────┘
+    │             │
+    └──────┬──────┘
+           ▼
+    ┌──────────┐
+    │ planner  │
+    │ 行动规划  │
+    └────┬─────┘
+         ▼
+    ┌──────────┐
+    │  report  │
+    │ 结果输出  │
+    └──────────┘
 ```
 
 ---
 
-## 6 个 Skill
+## 核心能力
 
-| Skill | 职责 |
-|-------|------|
-| `eia` | 编排器 —— 意图路由、用户画像推断、pipeline 选择 |
-| `eia-collect` | 数据采集 —— git/GitHub API、事件归一化、模块 enrichment |
-| `eia-build` | 知识构建 —— 时间线链接、实体图谱、聚合指标 |
-| `eia-reason` | 统一推理 —— 风险评分、根因分析、趋势检测 |
-| `eia-planner` | 行动规划 —— 发现→建议、优先级排序、角色适配 |
-| `eia-report` | 报告生成 —— 多语言输出、格式化、记忆写入 |
+| 能力 | 说明 |
+|------|------|
+| **意图路由** | 根据问题自动选择分析路径，6 种意图覆盖全部场景 |
+| **风险评分** | 基于 PR 大小、代码 churn、review 深度、历史缺陷多维打分 |
+| **根因分析** | bug → deploy → PR → commit 反向追溯，定位引入变更 |
+| **趋势检测** | 周期对比，识别指标异常波动并生成假设 |
+| **行动规划** | 按 [P0/P1/P2] 优先级输出可执行建议 |
+| **跨语言输出** | 中文提问中文回答，英文提问英文回答 |
 
 ---
 
 ## 意图路由
 
-| 意图 | Pipeline | 是否调用 planner |
-|------|----------|-----------------|
-| debug（调试） | collect → build → reason(rca) → report | 跳过 |
-| investigate（调查） | collect → build → reason(all) → plan → report | 执行 |
-| monitor（监控） | collect → build → reason(risk) → [plan →] report | risk > 0.6 时执行 |
-| predict（预测） | collect → build → reason(risk+trend) → plan → report | 执行 |
-| report（报告） | collect → build → reason(trend) → plan → report | 执行 |
-| optimize（优化） | collect → build → reason(all) → plan → report | 执行 |
+| 意图 | Pipeline | Planner |
+|------|----------|---------|
+| debug | collect → build → rca → report | 跳过 |
+| investigate | collect → build → reason → plan → report | 执行 |
+| monitor | collect → build → risk → report | risk > 0.6 时 |
+| predict | collect → build → risk+trend → plan → report | 执行 |
+| report | collect → build → trend → plan → report | 执行 |
+| optimize | collect → build → reason → plan → report | 执行 |
 
-**冲突优先级**：investigate > debug > optimize > predict > report > monitor
+冲突优先级：investigate > debug > optimize > predict > report > monitor
 
 ---
 
@@ -114,22 +105,32 @@ codex plugin add devops-analytics@<marketplace-name>
 |------|------|
 | `GITHUB_TOKEN` | 启用 GitHub API 采集 PR/issue/review 数据 |
 
-Git 数据开箱即用，无需配置。记忆存储在 `~/.eia/memory.md`（自动创建）。
+Git 数据开箱即用。记忆存储在 `~/.eia/memory.md`。
 
 ---
 
-## 使用示例
+## 示例
 
-| 提问 | 执行的 pipeline |
-|------|----------------|
-| 「为什么支付模块最近总是超时？」 | collect → build → reason(rca) → report |
-| 「Why have PR review times increased?」 | collect → build → reason(all) → plan → report |
-| 「生成本周工程效率报告」 | collect → build → reason(trend) → plan → report |
-| 「这个模块风险怎么样？」 | collect → build → reason(risk+trend) → plan → report |
-| 「优化我们的开发流程」 | collect → build → reason(all) → plan → report |
+| 提问 | Pipeline |
+|------|----------|
+| 「为什么支付模块最近总是超时？」 | rca → report |
+| 「Why have PR review times increased?」 | reason → plan → report |
+| 「生成本周工程效率报告」 | trend → plan → report |
+| 「这个模块风险怎么样？」 | risk+trend → plan → report |
+
+---
+
+## 架构设计
+
+**V3 规划 + V1 执行**：决策层用抽象能力（意图路由、角色推断、记忆），执行层用确定性（git 命令、GitHub API、线性 pipeline）。
+
+- **6 个独立 Skill**：每个可独立调用，通过 `previous_output` 传递数据
+- **显式 IO Contract**：每个 skill 定义输入输出格式，无隐式依赖
+- **Markdown Memory**：跨会话记忆存储在 `~/.eia/memory.md`，append-only
+- **冲突规则硬编码**：意图分类、优先级排序、跳过规则全部写死，无模糊判断
 
 ---
 
 ## 许可证
 
-MIT
+[MIT](LICENSE)
