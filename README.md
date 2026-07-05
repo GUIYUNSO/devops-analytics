@@ -35,7 +35,7 @@ mkdir -p ~/.agents/plugins && \
 python3 -c "
 import json, os
 mf = os.path.expanduser('~/.agents/plugins/marketplace.json')
-entry = {'name':'devops-analytics','source':{'source':'local','path':'~/.codex/plugins/devops-analytics'},'policy':{'installation':'AVAILABLE','authentication':'ON_INSTALL'},'category':'Productivity'}
+entry = {'name':'devops-analytics','source':{'source':'local','path':'.codex/plugins/devops-analytics'},'policy':{'installation':'AVAILABLE','authentication':'ON_INSTALL'},'category':'Productivity'}
 try:
     data = json.load(open(mf))
 except: data = {'name':'personal','interface':{'displayName':'Personal'},'plugins':[]}
@@ -56,7 +56,7 @@ New-Item -ItemType Directory -Force -Path "$HOME\.codex\plugins" | Out-Null
 Copy-Item -Recurse "$env:TEMP\eia-install\plugins\devops-analytics" "$HOME\.codex\plugins\"
 New-Item -ItemType Directory -Force -Path "$HOME\.agents\plugins" | Out-Null
 $mf = "$HOME\.agents\plugins\marketplace.json"
-$entry = @{name='devops-analytics';source=@{source='local';path="$HOME\.codex\plugins\devops-analytics"};policy=@{installation='AVAILABLE';authentication='ON_INSTALL'};category='Productivity'}
+$entry = @{name='devops-analytics';source=@{source='local';path='.codex/plugins/devops-analytics'};policy=@{installation='AVAILABLE';authentication='ON_INSTALL'};category='Productivity'}
 try { $data = Get-Content $mf -Raw | ConvertFrom-Json } catch { $data = @{name='personal';interface=@{displayName='Personal'};plugins=@()} }
 if (-not ($data.plugins | Where-Object { $_.name -eq 'devops-analytics' })) {
     $data.plugins += $entry
@@ -79,7 +79,7 @@ cp -r devops-analytics/plugins/devops-analytics ~/.codex/plugins/
 ```json
 {
   "name": "devops-analytics",
-  "source": { "source": "local", "path": "~/.codex/plugins/devops-analytics" },
+  "source": { "source": "local", "path": ".codex/plugins/devops-analytics" },
   "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
   "category": "Productivity"
 }
