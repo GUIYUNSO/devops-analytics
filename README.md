@@ -19,66 +19,75 @@
 ### 方式一：Codex 命令安装（推荐）
 
 ```bash
-# 添加 Git marketplace
 codex plugin marketplace add GUIYUNSO/devops-analytics
-
-# 安装插件
 codex plugin add devops-analytics@guiyunso
 ```
 
-### 方式二：手动安装
+### 方式二：一键脚本（复制粘贴即可）
+
+**macOS / Linux：**
 
 ```bash
-# 1. 克隆仓库
-git clone https://github.com/GUIYUNSO/devops-analytics.git
-
-# 2. 复制插件到 Codex 插件目录
-cp -r devops-analytics/plugins/devops-analytics ~/.codex/plugins/
-
-# 3. 注册到 marketplace
-# 在 ~/.agents/plugins/marketplace.json 的 plugins 数组中添加：
+git clone https://github.com/GUIYUNSO/devops-analytics.git /tmp/eia-install && \
+mkdir -p ~/.codex/plugins && \
+cp -r /tmp/eia-install/plugins/devops-analytics ~/.codex/plugins/ && \
+mkdir -p ~/.agents/plugins && \
+python3 -c "
+import json, os
+mf = os.path.expanduser('~/.agents/plugins/marketplace.json')
+entry = {'name':'devops-analytics','source':{'source':'local','path':'~/.codex/plugins/devops-analytics'},'policy':{'installation':'AVAILABLE','authentication':'ON_INSTALL'},'category':'Productivity'}
+try:
+    data = json.load(open(mf))
+except: data = {'name':'personal','interface':{'displayName':'Personal'},'plugins':[]}
+if not any(p['name']=='devops-analytics' for p in data.get('plugins',[])):
+    data.setdefault('plugins',[]).append(entry)
+    json.dump(data,open(mf,'w'),indent=2)
+print('已注册到 marketplace')
+" && \
+rm -rf /tmp/eia-install && \
+echo "安装完成，重启 Codex 即可使用"
 ```
+
+**Windows PowerShell：**
+
+```powershell
+git clone https://github.com/GUIYUNSO/devops-analytics.git $env:TEMP\eia-install
+New-Item -ItemType Directory -Force -Path "$HOME\.codex\plugins" | Out-Null
+Copy-Item -Recurse "$env:TEMP\eia-install\plugins\devops-analytics" "$HOME\.codex\plugins\"
+New-Item -ItemType Directory -Force -Path "$HOME\.agents\plugins" | Out-Null
+$mf = "$HOME\.agents\plugins\marketplace.json"
+$entry = @{name='devops-analytics';source=@{source='local';path="$HOME\.codex\plugins\devops-analytics"};policy=@{installation='AVAILABLE';authentication='ON_INSTALL'};category='Productivity'}
+try { $data = Get-Content $mf -Raw | ConvertFrom-Json } catch { $data = @{name='personal';interface=@{displayName='Personal'};plugins=@()} }
+if (-not ($data.plugins | Where-Object { $_.name -eq 'devops-analytics' })) {
+    $data.plugins += $entry
+    $data | ConvertTo-Json -Depth 10 | Set-Content $mf
+    Write-Host "已注册到 marketplace"
+}
+Remove-Item -Recurse "$env:TEMP\eia-install" -ErrorAction SilentlyContinue
+Write-Host "安装完成，重启 Codex 即可使用"
+```
+
+### 方式三：手动安装
+
+```bash
+git clone https://github.com/GUIYUNSO/devops-analytics.git
+cp -r devops-analytics/plugins/devops-analytics ~/.codex/plugins/
+```
+
+然后在 `~/.agents/plugins/marketplace.json` 的 `plugins` 数组中添加：
 
 ```json
 {
   "name": "devops-analytics",
-  "source": {
-    "source": "local",
-    "path": "~/.codex/plugins/devops-analytics"
-  },
-  "policy": {
-    "installation": "AVAILABLE",
-    "authentication": "ON_INSTALL"
-  },
+  "source": { "source": "local", "path": "~/.codex/plugins/devops-analytics" },
+  "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
   "category": "Productivity"
 }
 ```
 
-```bash
-# 4. 重启 Codex 生效
-```
+重启 Codex 生效。
 
-### 方式三：一键脚本
-
-```bash
-# macOS / Linux
-git clone https://github.com/GUIYUNSO/devops-analytics.git /tmp/devops-analytics && \
-mkdir -p ~/.codex/plugins && \
-cp -r /tmp/devops-analytics/plugins/devops-analytics ~/.codex/plugins/ && \
-rm -rf /tmp/devops-analytics && \
-echo "安装完成，重启 Codex 即可使用"
-```
-
-```powershell
-# Windows PowerShell
-git clone https://github.com/GUIYUNSO/devops-analytics.git $env:TEMP\devops-analytics; \
-mkdir -Force ~/.codex/plugins; \
-Copy-Item -Recurse $env:TEMP\devops-analytics\plugins\devops-analytics ~/.codex/plugins/; \
-Remove-Item -Recurse $env:TEMP\devops-analytics; \
-Write-Host "安装完成，重启 Codex 即可使用"
-```
-
-### 直接提问
+### 提问示例
 
 > *「分析这个仓库的主要风险」*
 > *「为什么最近 bug 越来越多？」*
