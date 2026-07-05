@@ -1,131 +1,135 @@
-# Engineering Intelligence Agent (EIA)
+# 工程智能代理（EIA）
 
-**V3 planning + V1 execution** — an adaptive DevOps analytics plugin for Codex.
+**V3 规划 + V1 执行** —— Codex 自适应 DevOps 分析插件。
 
-EIA transforms raw development events into actionable engineering intelligence. Given a question about your codebase, it collects data, builds timelines and knowledge graphs, reasons across multiple dimensions, plans actions, and delivers a concise answer — all in a single linear pipeline.
+EIA 将原始开发事件转化为可执行的工程洞察。输入一个关于代码仓库的问题，它会自动采集数据、构建时间线和知识图谱、多维推理、规划行动，并以简洁的语言输出结果——全部在一个线性 pipeline 中完成。
 
 ---
 
-## Quick Start
+## 快速开始
 
-### Install
+### 安装
 
-`ash
+```bash
 codex plugin add devops-analytics@personal
-`
+```
 
-Then start a new thread and ask:
+安装后启动新会话，直接提问：
 
-> *"分析这个仓库的主要风险"*
-> *"Why have bugs been increasing lately?"*
-> *"给这周的工程效率做个报告"*
+> *「分析这个仓库的主要风险」*
+> *「为什么最近 bug 越来越多？」*
+> *「给这周的工程效率做个报告」*
 
-### Install from GitHub
+### 从 GitHub 安装
 
-Add a marketplace pointing to \GUIYUNSO/devops-analytics\, then:
+将 marketplace 指向 `GUIYUNSO/devops-analytics`，然后执行：
 
-`ash
+```bash
 codex plugin add devops-analytics@<marketplace-name>
-`
+```
 
 ---
 
-## Architecture
+## 架构
 
-\\\
-User question
-    │
-    ▼
-┌─ eia (orchestrator) ──────────────────────────────┐
-│  infer profile (role, urgency, language)           │
-│  classify intent (6 types)                         │
-│  read memory → select pipeline                     │
-└────────────────────────────────────────────────────┘
-    │
-    ▼
-┌─ eia-collect ─────────────────────────────────────┐
-│  git log / gh api                                  │
-│  normalize to unified event schema                 │
-│  compute modules, ownership, churn                 │
-└────────────────────────────────────────────────────┘
-    │
-    ▼
-┌─ eia-build ───────────────────────────────────────┐
-│  link events into lifecycle timelines              │
-│  build entity-relationship graph                   │
-│  compute aggregates (lead time, bottleneck)        │
-└────────────────────────────────────────────────────┘
-    │
-    ▼
-┌─ eia-reason ──────────────────────────────────────┐
-│  risk: score PRs & modules                         │
-│  rca:  trace bug → deploy → PR → commit            │
-│  trend: compare periods, detect shifts              │
-└────────────────────────────────────────────────────┘
-    │
-    ▼
-┌─ eia-planner ─────────────────────────────────────┐
-│  match findings to action rules                     │
-│  prioritize by impact/effort                        │
-│  tailor to user role                                │
-└────────────────────────────────────────────────────┘
-    │
-    ▼
-┌─ eia-report ──────────────────────────────────────┐
-│  compose in user's language                         │
-│  conversation or report format                      │
-│  append pipeline trace + write memory               │
-└────────────────────────────────────────────────────┘
-\\\
+```
+用户提问
+  │
+  ▼
+┌─ eia（编排器）───────────────────────────────────┐
+│  推断用户角色、紧急度、语言                          │
+│  分类意图（6 种类型）                               │
+│  读取记忆 → 选择 pipeline                          │
+└──────────────────────────────────────────────────┘
+  │
+  ▼
+┌─ eia-collect（采集）─────────────────────────────┐
+│  git log / GitHub API                             │
+│  统一事件 Schema                                   │
+│  计算模块归属、代码 ownership、变更频率               │
+└──────────────────────────────────────────────────┘
+  │
+  ▼
+┌─ eia-build（构建）───────────────────────────────┐
+│  将事件链接为生命周期时间线                          │
+│  构建实体关系图谱                                   │
+│  计算聚合指标（lead time、瓶颈定位）                  │
+└──────────────────────────────────────────────────┘
+  │
+  ▼
+┌─ eia-reason（推理）──────────────────────────────┐
+│  风险评分：为 PR 和模块打分                          │
+│  根因分析：bug → deploy → PR → commit 反向追溯      │
+│  趋势分析：周期对比、异常检测                         │
+└──────────────────────────────────────────────────┘
+  │
+  ▼
+┌─ eia-planner（规划）─────────────────────────────┐
+│  将发现匹配为行动规则                                │
+│  按影响/成本比排序                                   │
+│  根据用户角色裁剪                                    │
+└──────────────────────────────────────────────────┘
+  │
+  ▼
+┌─ eia-report（报告）──────────────────────────────┐
+│  用用户语言组织输出                                   │
+│  对话模式或报告模式                                   │
+│  追加 pipeline trace + 写入记忆                      │
+└──────────────────────────────────────────────────┘
+```
 
 ---
 
-## 6 Skills
+## 6 个 Skill
 
-| Skill | Role |
+| Skill | 职责 |
 |-------|------|
-| eia | Orchestrator — intent routing, profile inference, pipeline selection |
-| eia-collect | Data collection from git/GitHub, event normalization |
-| eia-build | Timeline construction, knowledge graph generation |
-| eia-reason | Unified reasoning: risk scoring, RCA, trend detection |
-| eia-planner | Action planning from analysis findings |
-| eia-report | Response composition in user's language |
-
-### Intent Routing
-
-| Intent | Pipeline | Plan? |
-|--------|----------|-------|
-| debug | collect → build → reason(rca) → report | Skip |
-| investigate | collect → build → reason(all) → plan → report | Run |
-| monitor | collect → build → reason(risk) → [plan →] report | If risk > 0.6 |
-| predict | collect → build → reason(risk+trend) → plan → report | Run |
-| report | collect → build → reason(trend) → plan → report | Run |
-| optimize | collect → build → reason(all) → plan → report | Run |
-
-Conflict: investigate > debug > optimize > predict > report > monitor
+| `eia` | 编排器 —— 意图路由、用户画像推断、pipeline 选择 |
+| `eia-collect` | 数据采集 —— git/GitHub API、事件归一化、模块 enrichment |
+| `eia-build` | 知识构建 —— 时间线链接、实体图谱、聚合指标 |
+| `eia-reason` | 统一推理 —— 风险评分、根因分析、趋势检测 |
+| `eia-planner` | 行动规划 —— 发现→建议、优先级排序、角色适配 |
+| `eia-report` | 报告生成 —— 多语言输出、格式化、记忆写入 |
 
 ---
 
-## Configuration
+## 意图路由
 
-| Variable | Purpose |
-|----------|---------|
-| \GITHUB_TOKEN\ | Enables GitHub API for PR/issue/review data |
+| 意图 | Pipeline | 是否调用 planner |
+|------|----------|-----------------|
+| debug（调试） | collect → build → reason(rca) → report | 跳过 |
+| investigate（调查） | collect → build → reason(all) → plan → report | 执行 |
+| monitor（监控） | collect → build → reason(risk) → [plan →] report | risk > 0.6 时执行 |
+| predict（预测） | collect → build → reason(risk+trend) → plan → report | 执行 |
+| report（报告） | collect → build → reason(trend) → plan → report | 执行 |
+| optimize（优化） | collect → build → reason(all) → plan → report | 执行 |
 
-Git data works out of the box. Memory is stored at \~/.eia/memory.md\ (auto-created).
-
----
-
-## Usage
-
-| Example | Pipeline |
-|---------|----------|
-| \为什么支付模块最近总是超时？\ | collect → build → reason(rca) → report |
-| \Why have PR review times increased?\ | collect → build → reason(all) → plan → report |
-| \Generate a weekly engineering report\ | collect → build → reason(trend) → plan → report |
+**冲突优先级**：investigate > debug > optimize > predict > report > monitor
 
 ---
 
-## License
+## 配置
+
+| 变量 | 用途 |
+|------|------|
+| `GITHUB_TOKEN` | 启用 GitHub API 采集 PR/issue/review 数据 |
+
+Git 数据开箱即用，无需配置。记忆存储在 `~/.eia/memory.md`（自动创建）。
+
+---
+
+## 使用示例
+
+| 提问 | 执行的 pipeline |
+|------|----------------|
+| 「为什么支付模块最近总是超时？」 | collect → build → reason(rca) → report |
+| 「Why have PR review times increased?」 | collect → build → reason(all) → plan → report |
+| 「生成本周工程效率报告」 | collect → build → reason(trend) → plan → report |
+| 「这个模块风险怎么样？」 | collect → build → reason(risk+trend) → plan → report |
+| 「优化我们的开发流程」 | collect → build → reason(all) → plan → report |
+
+---
+
+## 许可证
 
 MIT
