@@ -29,43 +29,13 @@
 
 ## ⚡ 30 秒装上
 
-### 方式一：一行命令安装（推荐）
-
-```bash
-git clone https://github.com/GUIYUNSO/devops-analytics.git && \
-cp -r devops-analytics/plugins/devops-analytics ~/.codex/plugins/ && \
-mkdir -p ~/.agents/plugins && \
-python3 -c "
-import json,os
-f=os.path.expanduser('~/.agents/plugins/marketplace.json')
-e={'name':'devops-analytics','source':{'source':'local','path':'.codex/plugins/devops-analytics'},'policy':{'installation':'AVAILABLE','authentication':'ON_INSTALL'},'category':'Productivity'}
-try:d=json.load(open(f))
-except:d={'name':'personal','interface':{'displayName':'Personal'},'plugins':[]}
-if not any(p['name']=='devops-analytics' for p in d.get('plugins',[])):d['plugins'].append(e);json.dump(d,open(f,'w'),indent=2);print('Done')
-else:print('Already installed')
-" && \
-rm -rf devops-analytics && \
-echo "安装完成，重启 Codex 即可使用"
-```
-
-<details>
-<summary>Windows PowerShell 一行安装</summary>
-
-```powershell
-git clone https://github.com/GUIYUNSO/devops-analytics.git $env:TEMP\eia; Copy-Item -Recurse "$env:TEMP\eia\plugins\devops-analytics" "$HOME\.codex\plugins\"; New-Item -ItemType Directory -Force -Path "$HOME\.agents\plugins" | Out-Null; $f="$HOME\.agents\plugins\marketplace.json"; $e=@{name='devops-analytics';source=@{source='local';path='.codex/plugins/devops-analytics'};policy=@{installation='AVAILABLE';authentication='ON_INSTALL'};category='Productivity'}; try{$d=Get-Content $f -Raw|ConvertFrom-Json}catch{$d=@{name='personal';interface=@{displayName='Personal'};plugins=@()}}; if(-not($d.plugins|Where-Object{$_.name-eq'devops-analytics'})){$d.plugins+=$e;$d|ConvertTo-Json -Depth 10|Set-Content $f}; Remove-Item -Recurse "$env:TEMP\eia" -ErrorAction SilentlyContinue; Write-Host "安装完成，重启 Codex 即可使用"
-```
-
-</details>
-
-<details>
-<summary>方式二：手动安装</summary>
-
 ```bash
 git clone https://github.com/GUIYUNSO/devops-analytics.git
 cp -r devops-analytics/plugins/devops-analytics ~/.codex/plugins/
+rm -rf devops-analytics
 ```
 
-然后在 `~/.agents/plugins/marketplace.json` 的 `plugins` 数组中添加：
+然后在 `~/.agents/plugins/marketplace.json` 的 `plugins` 数组末尾加一段：
 
 ```json
 {
@@ -76,16 +46,22 @@ cp -r devops-analytics/plugins/devops-analytics ~/.codex/plugins/
 }
 ```
 
-重启 Codex 生效。
-
-</details>
+重启 Codex 即可。
 
 <details>
-<summary>方式三：Codex 命令安装</summary>
+<summary>其他安装方式</summary>
+
+**Codex 命令安装：**
 
 ```bash
 codex plugin marketplace add GUIYUNSO/devops-analytics
 codex plugin add devops-analytics@guiyunso
+```
+
+**macOS / Linux 一行脚本（含自动注册 marketplace）：**
+
+```bash
+git clone https://github.com/GUIYUNSO/devops-analytics.git /tmp/eia && cp -r /tmp/eia/plugins/devops-analytics ~/.codex/plugins/ && rm -rf /tmp/eia && mkdir -p ~/.agents/plugins && python3 -c "import json,os;f=os.path.expanduser('~/.agents/plugins/marketplace.json');e={'name':'devops-analytics','source':{'source':'local','path':'.codex/plugins/devops-analytics'},'policy':{'installation':'AVAILABLE','authentication':'ON_INSTALL'},'category':'Productivity'};d=json.load(open(f)) if os.path.exists(f) else {'name':'personal','interface':{'displayName':'Personal'},'plugins':[]};d.setdefault('plugins',[]);[d['plugins'].append(e) for _ in [1] if not any(p['name']=='devops-analytics' for p in d['plugins'])];json.dump(d,open(f,'w'),indent=2);print('Done')" && echo "重启 Codex 即可"
 ```
 
 </details>
