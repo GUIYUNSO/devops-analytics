@@ -16,7 +16,7 @@
 
 ## 快速开始
 
-**安装**
+### 方式一：Codex 命令安装（推荐）
 
 ```bash
 # 添加 Git marketplace
@@ -26,7 +26,59 @@ codex plugin marketplace add GUIYUNSO/devops-analytics
 codex plugin add devops-analytics@guiyunso
 ```
 
-**直接提问**
+### 方式二：手动安装
+
+```bash
+# 1. 克隆仓库
+git clone https://github.com/GUIYUNSO/devops-analytics.git
+
+# 2. 复制插件到 Codex 插件目录
+cp -r devops-analytics/plugins/devops-analytics ~/.codex/plugins/
+
+# 3. 注册到 marketplace
+# 在 ~/.agents/plugins/marketplace.json 的 plugins 数组中添加：
+```
+
+```json
+{
+  "name": "devops-analytics",
+  "source": {
+    "source": "local",
+    "path": "~/.codex/plugins/devops-analytics"
+  },
+  "policy": {
+    "installation": "AVAILABLE",
+    "authentication": "ON_INSTALL"
+  },
+  "category": "Productivity"
+}
+```
+
+```bash
+# 4. 重启 Codex 生效
+```
+
+### 方式三：一键脚本
+
+```bash
+# macOS / Linux
+git clone https://github.com/GUIYUNSO/devops-analytics.git /tmp/devops-analytics && \
+mkdir -p ~/.codex/plugins && \
+cp -r /tmp/devops-analytics/plugins/devops-analytics ~/.codex/plugins/ && \
+rm -rf /tmp/devops-analytics && \
+echo "安装完成，重启 Codex 即可使用"
+```
+
+```powershell
+# Windows PowerShell
+git clone https://github.com/GUIYUNSO/devops-analytics.git $env:TEMP\devops-analytics; \
+mkdir -Force ~/.codex/plugins; \
+Copy-Item -Recurse $env:TEMP\devops-analytics\plugins\devops-analytics ~/.codex/plugins/; \
+Remove-Item -Recurse $env:TEMP\devops-analytics; \
+Write-Host "安装完成，重启 Codex 即可使用"
+```
+
+### 直接提问
 
 > *「分析这个仓库的主要风险」*
 > *「为什么最近 bug 越来越多？」*
